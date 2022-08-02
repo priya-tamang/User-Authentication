@@ -1,5 +1,6 @@
 from dataclasses import field
 from pyexpat import model
+from attr import validate
 from django import conf
 from rest_framework import serializers
 from apps.authapp.models import(
@@ -27,7 +28,10 @@ class CustomerSerializer(serializers.ModelSerializer):
         if len(value) < 5:
             raise serializers.ValidationError(
                 "Username must be at least 5 characters long.."
+                
             )
+    
+            
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
@@ -47,3 +51,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "The Email field is required. Please enter a valid email address"
             )
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(allow_null=True)
+    password = serializers.CharField(allow_null=True)
