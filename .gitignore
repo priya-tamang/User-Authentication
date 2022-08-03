@@ -1,0 +1,6 @@
+*.pyc
+__pycache__/
+venv/
+tmedia
+db.sqlite3
+data/

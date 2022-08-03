@@ -30,6 +30,7 @@ class CustomerSerializer(serializers.ModelSerializer):
                 "Username must be at least 5 characters long.."
                 
             )
+        return value
     
             
     def validate_email(self, value):
@@ -37,6 +38,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Email is not avialable"
             )
+        return value # value was not returned
 
     def validate(self, value):
         password = value.get('password')
@@ -45,12 +47,14 @@ class CustomerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Password didnot match"
             )
+        return value # value was not returned
     
     def validate_empty_email(self, value):
         if value is None:
             raise serializers.ValidationError(
                 "The Email field is required. Please enter a valid email address"
             )
+        return value # value was not returned
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(allow_null=True)

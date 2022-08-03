@@ -20,17 +20,17 @@ from apps.authapp.utils import get_token_for_user
 class CustomerRegisterAPIView(APIView):
     parser_classes = (FormParser, MultiPartParser)
     @extend_schema(request=CustomerSerializer)
-    def post(self,request):
-        serializers = CustomerSerializer(data=request.data)
+    def post(self,request, *args, **kwargs):
+        serializer = CustomerSerializer(data=request.data)
         # print("serializers :", serializers)
-        if serializers.is_valid(raise_exception=True):
-            username = serializers.validated_data.get('username')
-            email = serializers.validated_data.get('email')
-            password = serializers.validated_data.get('password')
-            first_name = serializers.validated_data.get('first_name')
-            last_name = serializers.validated_data.get('last_name')
-            phone = serializers.validated_data.get('phone')
-            print('phone', username)
+        if serializer.is_valid(raise_exception=True):
+            username = serializer.validated_data.get('username')
+            email = serializer.validated_data.get('email')
+            password = serializer.validated_data.get('password')
+            first_name = serializer.validated_data.get('first_name')
+            last_name = serializer.validated_data.get('last_name')
+            phone = serializer.validated_data.get('phone')
+
             user = User.objects.create_user(username=username,email=email,first_name=first_name,last_name=last_name, password=password)
             # print("user :", user)
             customer = Customer.objects.create(status="Active",user=user,phone=phone)
@@ -38,19 +38,18 @@ class CustomerRegisterAPIView(APIView):
                 "status": "success",
                 "message": "Account successfully created"
             }
-            return Response(resp)
 
         else:
             resp = {
                 "status": "failure",
-                "message": serializers.errors
+                "message": serializer.errors
             }
-            return Response(resp)
+        return Response(resp)
 
 class CustomerLoginAPIView(APIView):
     @extend_schema(request=UserLoginSerializer)
     def post(self,request):
-        serializers = UserLoginSerializer(data=request.data)
+        serializers = UserLoginSerializer(data=request.data) 
         if serializers.is_valid(raise_exception=True):
             email = serializers.validated_data.get("email")
             password = serializers.validated_data.get("password")
@@ -70,7 +69,7 @@ class CustomerLoginAPIView(APIView):
                         "message": "Pending or Suspended account. Please contact your administrator"
                     }
                     return Response(resp, status=status.HTTP_401_UNAUTHORIZED)
-            except Exception as e:
+            except Exception as e: # kun exception auncha thacha vane tei catch gara la
                 resp = {
                     "message": str(e)
                 }
